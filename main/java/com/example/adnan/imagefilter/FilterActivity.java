@@ -1,7 +1,9 @@
 package com.example.adnan.imagefilter;
 
+import android.content.ActivityNotFoundException;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -17,7 +19,10 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 
 public class FilterActivity extends AppCompatActivity implements SeekBar.OnSeekBarChangeListener {
-    final static int CAMERA_RESULT = 0;
+    final static int CAMERA_CAPTURE = 1;
+    //keep track of cropping intent
+    final int PIC_CROP = 2;
+    private Uri picUri;
     ImageView imv,InvertImv,ContrastImv,RoundedCornerImv,SaturationImv,HueFilterImv,GrayScaleImv;
     SeekBar contrastbar;
     @Override
@@ -50,7 +55,7 @@ public class FilterActivity extends AppCompatActivity implements SeekBar.OnSeekB
         contrastbar.setOnSeekBarChangeListener(this);
 
         Intent capture_intent = new Intent("android.media.action.IMAGE_CAPTURE");
-        startActivityForResult(capture_intent, CAMERA_RESULT);
+        startActivityForResult(capture_intent, CAMERA_CAPTURE);
 
         /*Button invert_button= (Button)findViewById(R.id.Invert_btn);
         invert_button.setOnClickListener(new View.OnClickListener() {
@@ -140,15 +145,51 @@ public class FilterActivity extends AppCompatActivity implements SeekBar.OnSeekB
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(this.CAMERA_RESULT == requestCode && resultCode == RESULT_OK){
-            Bitmap bitmap = (Bitmap)data.getExtras().get("data");
-            imv.setImageBitmap(bitmap);
-            InvertImv.setImageBitmap(Filter.doInvert(bitmap));
-            ContrastImv.setImageBitmap(Filter.createContrast((bitmap), 0));
-            RoundedCornerImv.setImageBitmap(Filter.roundCorner((bitmap), 10));
-            SaturationImv.setImageBitmap(Filter.applySaturationFilter((bitmap), 3));
-            HueFilterImv.setImageBitmap(Filter.applyHueFilter((bitmap), 3));
-            GrayScaleImv.setImageBitmap(Filter.doGreyscale(bitmap));
+        if(resultCode == RESULT_OK){
+            if(CAMERA_CAPTURE == requestCode) {
+                //get the Uri for the captured image
+                picUri = data.getData();
+                //carry out the crop operation
+                performCrop();
+            }
+            else if(requestCode == PIC_CROP){
+                //get the returned data
+                Bundle extras = data.getExtras();
+                //get the cropped bitmap
+                Bitmap bitmap = extras.getParcelable("data");
+                imv.setImageBitmap(bitmap);
+                InvertImv.setImageBitmap(Filter.doInvert(bitmap));
+                ContrastImv.setImageBitmap(Filter.createContrast((bitmap), 0));
+                RoundedCornerImv.setImageBitmap(Filter.roundCorner((bitmap), 10));
+                SaturationImv.setImageBitmap(Filter.applySaturationFilter((bitmap), 3));
+                HueFilterImv.setImageBitmap(Filter.applyHueFilter((bitmap), 3));
+                GrayScaleImv.setImageBitmap(Filter.doGreyscale(bitmap));
+            }
+        }
+    }
+    private void performCrop(){
+        try {
+            //call the standard crop action intent (the user device may not support it)
+            Intent cropIntent = new Intent("com.android.camera.action.CROP");
+            //indicate image type and Uri
+            cropIntent.setDataAndType(picUri, "image/*");
+            //set crop properties
+            cropIntent.putExtra("crop", "true");
+            //indicate aspect of desired crop
+            cropIntent.putExtra("aspectX", 1);
+            cropIntent.putExtra("aspectY", 1);
+            //indicate output X and Y
+            cropIntent.putExtra("outputX", 256);
+            cropIntent.putExtra("outputY", 256);
+            //retrieve data on return
+            cropIntent.putExtra("return-data", true);
+            //start the activity - we handle returning in onActivityResult
+            startActivityForResult(cropIntent, PIC_CROP);
+        }
+        catch(ActivityNotFoundException anfe){
+            //display an error message
+            String errorMessage = "Whoops - your device doesn't support the crop action!";
+            //Snackbar.make(this, errorMessage, Snackbar.LENGTH_LONG).setAction("Action", null).show();
         }
     }
 }
