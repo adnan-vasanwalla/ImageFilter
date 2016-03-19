@@ -1,38 +1,36 @@
 package com.example.adnan.imagefilter;
 
 import android.content.ActivityNotFoundException;
-import android.graphics.PorterDuff;
+import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SeekBar;
+
+import java.io.ByteArrayOutputStream;
 
 public class FilterActivity extends AppCompatActivity implements SeekBar.OnSeekBarChangeListener {
     final static int CAMERA_CAPTURE = 1;
     //keep track of cropping intent
     final int PIC_CROP = 2;
     private Uri picUri;
-    ImageView imv,InvertImv,ContrastImv,RoundedCornerImv,SaturationImv,HueFilterImv,GrayScaleImv;
-    SeekBar contrastbar;
+    ImageView imv,InvertImv,ContrastImv,RoundedCornerImv,SaturationImv,HueFilterImv,GrayScaleImv,RotateImv;
+    SeekBar contrastbar,rotateBar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filter);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        /*Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -47,6 +45,7 @@ public class FilterActivity extends AppCompatActivity implements SeekBar.OnSeekB
         SaturationImv = (ImageView) findViewById(R.id.SaturationImv);
         HueFilterImv = (ImageView) findViewById(R.id.HueFilterImv);
         GrayScaleImv = (ImageView) findViewById(R.id.GrayScaleImv);
+        RotateImv = (ImageView) findViewById(R.id.RotateImv);
 
         contrastbar=(SeekBar)findViewById(R.id.contrastBar);
         contrastbar.setVisibility(View.GONE);
@@ -54,24 +53,15 @@ public class FilterActivity extends AppCompatActivity implements SeekBar.OnSeekB
         contrastbar.setProgress(25);
         contrastbar.setOnSeekBarChangeListener(this);
 
+        /*rotateBar=(SeekBar)findViewById(R.id.rotateBar);
+        rotateBar.setVisibility(View.GONE);
+        rotateBar.setMax(360);
+        rotateBar.setProgress(0);
+        rotateBar.setOnSeekBarChangeListener(this);*/
+
         Intent capture_intent = new Intent("android.media.action.IMAGE_CAPTURE");
         startActivityForResult(capture_intent, CAMERA_CAPTURE);
 
-        /*Button invert_button= (Button)findViewById(R.id.Invert_btn);
-        invert_button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Bitmap bitmap = ((BitmapDrawable) imv.getDrawable()).getBitmap();
-                bitmap = Filter.doInvert(bitmap);
-                imv.setImageBitmap(bitmap);
-            }
-        });
-        Button contrast_button= (Button)findViewById(R.id.Contrast_btn);
-        contrast_button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-
-                contrastbar.setVisibility(View.VISIBLE);
-            }
-        });*/
         InvertImv.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Bitmap bitmap = ((BitmapDrawable) imv.getDrawable()).getBitmap();
@@ -94,14 +84,21 @@ public class FilterActivity extends AppCompatActivity implements SeekBar.OnSeekB
         SaturationImv.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Bitmap bitmap = ((BitmapDrawable) imv.getDrawable()).getBitmap();
-                bitmap = Filter.applySaturationFilter((bitmap),3);
+                bitmap = Filter.applySaturationFilter((bitmap), 3);
                 imv.setImageBitmap(bitmap);
             }
         });
         HueFilterImv.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Bitmap bitmap = ((BitmapDrawable) imv.getDrawable()).getBitmap();
-                bitmap = Filter.applyHueFilter((bitmap),3);
+                bitmap = Filter.applyHueFilter((bitmap), 3);
+                imv.setImageBitmap(bitmap);
+            }
+        });
+        RotateImv.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Bitmap bitmap = ((BitmapDrawable) imv.getDrawable()).getBitmap();
+                bitmap = Filter.rotate(bitmap,90);
                 imv.setImageBitmap(bitmap);
             }
         });
@@ -121,42 +118,48 @@ public class FilterActivity extends AppCompatActivity implements SeekBar.OnSeekB
     public void onProgressChanged(SeekBar seekBar, int progress,boolean fromUser)
     {
         Bitmap bitmap = ((BitmapDrawable) imv.getDrawable()).getBitmap();
-        Log.e("progress","progress="+(progress-25));
-        bitmap = Filter.createContrast(bitmap, (progress-25));
+        //if(seekBar==this.contrastbar)
+        {
+            Log.e("progress", "progress of contrast=" + (progress - 25));
+            bitmap = Filter.createContrast(bitmap, (progress - 25));
+        }
+        /*else if(seekBar==this.rotateBar)
+        {
+            Log.e("progress", "progress of rotate=" + (progress));
+            //bitmap = Filter.rotate(bitmap, (progress));
+            Matrix matrix = new Matrix();
+            imv.setScaleType(ImageView.ScaleType.MATRIX);   //required
+            matrix.postRotate((float) progress,imv.getDrawable().getBounds().width()/2, imv.getDrawable().getBounds().height()/2);
+            imv.setImageMatrix(matrix);
+        }*/
         imv.setImageBitmap(bitmap);
     }
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
-        contrastbar.setVisibility(View.GONE);
+        //if(seekBar==this.contrastbar)
+            contrastbar.setVisibility(View.GONE);
+        /*else if(seekBar==this.rotateBar)
+            rotateBar.setVisibility(View.GONE);*/
     }
-    /*protected void onActivityResult(int requestCode, int resultCode, Intent intent)
-    {
-        super.onActivityResult(requestCode, resultCode, intent);
-
-        if (resultCode == RESULT_OK)
-        {
-            Bundle extras = intent.getExtras();
-            Bitmap bmp = (Bitmap) extras.getParcelable("data");
-            imv = (ImageView) findViewById(R.id.ResultingImage);
-            imv.setImageBitmap(bmp);
-            }
-        }
-    }*/
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode == RESULT_OK){
-            if(CAMERA_CAPTURE == requestCode) {
+            /*if(CAMERA_CAPTURE == requestCode) {
                 //get the Uri for the captured image
                 picUri = data.getData();
                 //carry out the crop operation
                 performCrop();
             }
-            else if(requestCode == PIC_CROP){
+            else if(requestCode == PIC_CROP){*/
                 //get the returned data
                 Bundle extras = data.getExtras();
                 //get the cropped bitmap
                 Bitmap bitmap = extras.getParcelable("data");
+                //Bitmap bitmap = BitmapFactory.decodeResource(getResources(), extras.getParcelable("data"));
+                //bitmap = Bitmap.createBitmap(bitmap, 0, 0, 400, 400);
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 75, stream);
                 imv.setImageBitmap(bitmap);
                 InvertImv.setImageBitmap(Filter.doInvert(bitmap));
                 ContrastImv.setImageBitmap(Filter.createContrast((bitmap), 0));
@@ -164,7 +167,8 @@ public class FilterActivity extends AppCompatActivity implements SeekBar.OnSeekB
                 SaturationImv.setImageBitmap(Filter.applySaturationFilter((bitmap), 3));
                 HueFilterImv.setImageBitmap(Filter.applyHueFilter((bitmap), 3));
                 GrayScaleImv.setImageBitmap(Filter.doGreyscale(bitmap));
-            }
+                RotateImv.setImageBitmap(Filter.rotate((bitmap), 0));
+            //}
         }
     }
     private void performCrop(){
