@@ -3,21 +3,37 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.adnan.imagefilter.FilterActivity">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:weightSum="100">
+        <com.edmodo.cropper.CropImageView
+            xmlns:custom="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/Cropper"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="75"
+            android:background="@drawable/stripe_bg"
+            android:contentDescription="@string/desc"
+            android:paddingTop="5px"
+            android:paddingBottom="5px"
+            android:paddingLeft="2dp"
+            android:paddingRight="2dp"
+            custom:aspectRatioX="1"
+            android:visibility="gone"/>
         <ImageView
+            xmlns:custom="http://schemas.android.com/apk/res-auto"
             android:id="@+id/ResultingImage"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="75"
+            android:background="@drawable/stripe_bg"
+            android:paddingTop="5px"
+            android:paddingBottom="5px"
+            android:paddingLeft="2dp"
+            android:paddingRight="2dp"
             android:contentDescription="@string/desc" />
 
         <HorizontalScrollView
@@ -34,43 +50,288 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal"
+                android:background="@drawable/image_border"
+                android:padding="1dp"
                 android:scrollbars="none">
-                <ImageView
-                    android:id="@+id/InvertImv"
-                    android:layout_width="100dp"
+                <RelativeLayout
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    />
-                <ImageView
-                    android:id="@+id/ContrastImv"
-                    android:layout_width="100dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/image_border"
+                    android:padding="1dp"
+                    >
+                    <ImageView
+                        android:id="@+id/InvertImv"
+                        android:layout_width="100dp"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:adjustViewBounds="true"
+                        android:layout_above="@+id/InvertText"
+                        android:layout_centerHorizontal="true"/>
+                    <TextView
+                        android:id="@+id/InvertText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:layout_alignLeft="@+id/InvertImv"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignRight="@+id/InvertImv"
+                        android:lines="1"
+                        android:scrollHorizontally="false"
+                        android:textAppearance="?android:attr/textAppearance"
+                        android:textColorLink="@android:color/white"
+                        android:textStyle="bold"
+                        android:text="Invert"
+                        android:textColor="#000000"
+                        android:background="@drawable/image_border"
+                        android:paddingTop="1dp"
+                        android:paddingBottom="1dp" />
+                </RelativeLayout>
+                <RelativeLayout
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    />
-                <ImageView
-                    android:id="@+id/RoundedCornerImv"
-                    android:layout_width="100dp"
+                    android:layout_gravity="center"
+                    android:orientation="vertical"
+                    android:background="@drawable/image_border"
+                    android:padding="1dp"
+                    >
+                    <ImageView
+                        android:id="@+id/ContrastImv"
+                        android:layout_width="100dp"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:adjustViewBounds="true"
+                        android:layout_above="@+id/ContrastText"
+                        android:layout_centerHorizontal="true"/>
+                    <TextView
+                        android:id="@+id/ContrastText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:layout_alignLeft="@+id/ContrastImv"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignRight="@+id/ContrastImv"
+                        android:lines="1"
+                        android:scrollHorizontally="false"
+                        android:textAppearance="?android:attr/textAppearance"
+                        android:textColorLink="@android:color/white"
+                        android:textStyle="bold"
+                        android:text="Contrast"
+                        android:textColor="#000000"
+                        android:background="@drawable/image_border"
+                        android:paddingTop="1dp"
+                        android:paddingBottom="1dp" />
+                </RelativeLayout>
+                <RelativeLayout
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    />
-                <ImageView
-                    android:id="@+id/SaturationImv"
-                    android:layout_width="100dp"
+                    android:layout_gravity="center"
+                    android:orientation="vertical"
+                    android:background="@drawable/image_border"
+                    android:padding="1dp"
+                    >
+                    <ImageView
+                        android:id="@+id/RoundedCornerImv"
+                        android:layout_width="100dp"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:adjustViewBounds="true"
+                        android:layout_above="@+id/RoundedCornerText"
+                        android:layout_centerHorizontal="true"/>
+                    <TextView
+                        android:id="@+id/RoundedCornerText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:layout_alignLeft="@+id/RoundedCornerImv"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignRight="@+id/RoundedCornerImv"
+                        android:lines="1"
+                        android:scrollHorizontally="false"
+                        android:textAppearance="?android:attr/textAppearance"
+                        android:textColorLink="@android:color/white"
+                        android:textStyle="bold"
+                        android:text="Corners"
+                        android:textColor="#000000"
+                        android:background="@drawable/image_border"
+                        android:paddingTop="1dp"
+                        android:paddingBottom="1dp" />
+                </RelativeLayout>
+                <RelativeLayout
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    />
-                <ImageView
-                    android:id="@+id/HueFilterImv"
-                    android:layout_width="100dp"
+                    android:layout_gravity="center"
+                    android:orientation="vertical"
+                    android:background="@drawable/image_border"
+                    android:padding="1dp"
+                    >
+                    <ImageView
+                        android:id="@+id/SaturationImv"
+                        android:layout_width="100dp"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:adjustViewBounds="true"
+                        android:layout_above="@+id/SaturationText"
+                        android:layout_centerHorizontal="true"/>
+                    <TextView
+                        android:id="@+id/SaturationText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:layout_alignLeft="@+id/SaturationImv"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignRight="@+id/SaturationImv"
+                        android:lines="1"
+                        android:scrollHorizontally="false"
+                        android:textAppearance="?android:attr/textAppearance"
+                        android:textColorLink="@android:color/white"
+                        android:textStyle="bold"
+                        android:text="Saturation"
+                        android:textColor="#000000"
+                        android:background="@drawable/image_border"
+                        android:paddingTop="1dp"
+                        android:paddingBottom="1dp" />
+                </RelativeLayout>
+                <RelativeLayout
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    />
-                <ImageView
-                    android:id="@+id/GrayScaleImv"
-                    android:layout_width="100dp"
+                    android:layout_gravity="center"
+                    android:orientation="vertical"
+                    android:background="@drawable/image_border"
+                    android:padding="1dp"
+                    >
+                    <ImageView
+                        android:id="@+id/HueFilterImv"
+                        android:layout_width="100dp"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:adjustViewBounds="true"
+                        android:layout_above="@+id/HueFilterText"
+                        android:layout_centerHorizontal="true"/>
+                    <TextView
+                        android:id="@+id/HueFilterText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:layout_alignLeft="@+id/HueFilterImv"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignRight="@+id/HueFilterImv"
+                        android:lines="1"
+                        android:scrollHorizontally="false"
+                        android:textAppearance="?android:attr/textAppearance"
+                        android:textColorLink="@android:color/white"
+                        android:textStyle="bold"
+                        android:text="Hue Filter"
+                        android:textColor="#000000"
+                        android:background="@drawable/image_border"
+                        android:paddingTop="1dp"
+                        android:paddingBottom="1dp" />
+                </RelativeLayout>
+                <RelativeLayout
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    />
-                <ImageView
-                    android:id="@+id/RotateImv"
-                    android:layout_width="100dp"
+                    android:layout_gravity="center"
+                    android:orientation="vertical"
+                    android:background="@drawable/image_border"
+                    android:padding="1dp"
+                    >
+                    <ImageView
+                        android:id="@+id/GrayScaleImv"
+                        android:layout_width="100dp"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:adjustViewBounds="true"
+                        android:layout_above="@+id/GrayScaleText"
+                        android:layout_centerHorizontal="true"/>
+                    <TextView
+                        android:id="@+id/GrayScaleText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:layout_alignLeft="@+id/GrayScaleImv"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignRight="@+id/GrayScaleImv"
+                        android:lines="1"
+                        android:scrollHorizontally="false"
+                        android:textAppearance="?android:attr/textAppearance"
+                        android:textColorLink="@android:color/white"
+                        android:textStyle="bold"
+                        android:text="Gray Scale"
+                        android:textColor="#000000"
+                        android:background="@drawable/image_border"
+                        android:paddingTop="1dp"
+                        android:paddingBottom="1dp" />
+                </RelativeLayout>
+                <RelativeLayout
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    />
-
+                    android:layout_gravity="center"
+                    android:orientation="vertical"
+                    android:background="@drawable/image_border"
+                    android:padding="1dp"
+                    >
+                    <ImageView
+                        android:id="@+id/RotateImv"
+                        android:layout_width="100dp"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:adjustViewBounds="true"
+                        android:layout_above="@+id/RotateText"
+                        android:layout_centerHorizontal="true"/>
+                    <TextView
+                        android:id="@+id/RotateText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:layout_alignLeft="@+id/RotateImv"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignRight="@+id/RotateImv"
+                        android:lines="1"
+                        android:scrollHorizontally="false"
+                        android:textAppearance="?android:attr/textAppearance"
+                        android:textColorLink="@android:color/white"
+                        android:textStyle="bold"
+                        android:text="Rotate"
+                        android:textColor="#000000"
+                        android:background="@drawable/image_border"
+                        android:paddingTop="1dp"
+                        android:paddingBottom="1dp" />
+                </RelativeLayout>
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:orientation="vertical"
+                    android:background="@drawable/image_border"
+                    android:padding="1dp"
+                    >
+                    <ImageView
+                        android:id="@+id/CropImv"
+                        android:layout_width="100dp"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:adjustViewBounds="true"
+                        android:layout_above="@+id/CropText"
+                        android:layout_centerHorizontal="true"/>
+                    <TextView
+                        android:id="@+id/CropText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:layout_alignLeft="@+id/CropImv"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignRight="@+id/CropImv"
+                        android:lines="1"
+                        android:scrollHorizontally="false"
+                        android:textAppearance="?android:attr/textAppearance"
+                        android:textColorLink="@android:color/white"
+                        android:textStyle="bold"
+                        android:text="Crop"
+                        android:textColor="#000000"
+                        android:background="@drawable/image_border"
+                        android:paddingTop="1dp"
+                        android:paddingBottom="1dp" />
+                </RelativeLayout>
             </LinearLayout>
         </HorizontalScrollView>
     </LinearLayout>
@@ -80,4 +341,5 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_marginTop="70dp" />
+
 </RelativeLayout>

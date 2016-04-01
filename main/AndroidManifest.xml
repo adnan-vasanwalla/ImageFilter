@@ -18,11 +18,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".FilterActivity"
-            android:label="@string/title_activity_filter"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".FilterActivity"></activity>
     </application>
 
 </manifest>

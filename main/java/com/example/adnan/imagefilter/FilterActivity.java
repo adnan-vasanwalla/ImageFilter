@@ -13,6 +13,9 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.widget.ImageView;
 import android.widget.SeekBar;
+import android.widget.TextView;
+
+import com.edmodo.cropper.CropImageView;
 
 import java.io.ByteArrayOutputStream;
 
@@ -21,7 +24,9 @@ public class FilterActivity extends AppCompatActivity implements SeekBar.OnSeekB
     //keep track of cropping intent
     final int PIC_CROP = 2;
     private Uri picUri;
-    ImageView imv,InvertImv,ContrastImv,RoundedCornerImv,SaturationImv,HueFilterImv,GrayScaleImv,RotateImv;
+    ImageView InvertImv,ContrastImv,RoundedCornerImv,SaturationImv,HueFilterImv,GrayScaleImv,RotateImv,CropImv,imv;
+    CropImageView Cropper;
+    TextView CropText;
     SeekBar contrastbar,rotateBar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,8 +34,16 @@ public class FilterActivity extends AppCompatActivity implements SeekBar.OnSeekB
         setContentView(R.layout.activity_filter);
         /*Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        if(toolbar!=null) {
+            toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.undo_btn));
+            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //What to do on back clicked
+                }
+            });
+        }*/
+        /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -38,6 +51,7 @@ public class FilterActivity extends AppCompatActivity implements SeekBar.OnSeekB
                         .setAction("Action", null).show();
             }
         });*/
+        Cropper = (CropImageView) findViewById(R.id.Cropper);
         imv = (ImageView) findViewById(R.id.ResultingImage);
         InvertImv = (ImageView) findViewById(R.id.InvertImv);
         ContrastImv = (ImageView) findViewById(R.id.ContrastImv);
@@ -46,6 +60,8 @@ public class FilterActivity extends AppCompatActivity implements SeekBar.OnSeekB
         HueFilterImv = (ImageView) findViewById(R.id.HueFilterImv);
         GrayScaleImv = (ImageView) findViewById(R.id.GrayScaleImv);
         RotateImv = (ImageView) findViewById(R.id.RotateImv);
+        CropImv = (ImageView) findViewById(R.id.CropImv);
+        CropText= (TextView) findViewById(R.id.CropText);
 
         contrastbar=(SeekBar)findViewById(R.id.contrastBar);
         contrastbar.setVisibility(View.GONE);
@@ -98,7 +114,7 @@ public class FilterActivity extends AppCompatActivity implements SeekBar.OnSeekB
         RotateImv.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Bitmap bitmap = ((BitmapDrawable) imv.getDrawable()).getBitmap();
-                bitmap = Filter.rotate(bitmap,90);
+                bitmap = Filter.rotate(bitmap, 90);
                 imv.setImageBitmap(bitmap);
             }
         });
@@ -107,6 +123,27 @@ public class FilterActivity extends AppCompatActivity implements SeekBar.OnSeekB
                 Bitmap bitmap = ((BitmapDrawable) imv.getDrawable()).getBitmap();
                 bitmap = Filter.doGreyscale(bitmap);
                 imv.setImageBitmap(bitmap);
+            }
+        });
+        CropImv.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Bitmap bitmap = ((BitmapDrawable) imv.getDrawable()).getBitmap();
+                if(Cropper.getVisibility() == View.GONE)
+                {
+                    imv.setVisibility(View.GONE);
+                    Cropper.setImageBitmap(bitmap);
+                    Cropper.setVisibility(View.VISIBLE);
+                    CropText.setText("Click again");
+                }
+                else
+                {
+                    Bitmap croppedImage = Cropper.getCroppedImage();
+                    imv.setImageBitmap(croppedImage);
+                    Cropper.setImageBitmap(croppedImage);
+                    Cropper.setVisibility(View.GONE);
+                    imv.setVisibility(View.VISIBLE);
+                    CropText.setText("Crop");
+                }
             }
         });
     }
@@ -137,7 +174,7 @@ public class FilterActivity extends AppCompatActivity implements SeekBar.OnSeekB
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
         //if(seekBar==this.contrastbar)
-            contrastbar.setVisibility(View.GONE);
+        contrastbar.setVisibility(View.GONE);
         /*else if(seekBar==this.rotateBar)
             rotateBar.setVisibility(View.GONE);*/
     }
@@ -152,22 +189,24 @@ public class FilterActivity extends AppCompatActivity implements SeekBar.OnSeekB
                 performCrop();
             }
             else if(requestCode == PIC_CROP){*/
-                //get the returned data
-                Bundle extras = data.getExtras();
-                //get the cropped bitmap
-                Bitmap bitmap = extras.getParcelable("data");
-                //Bitmap bitmap = BitmapFactory.decodeResource(getResources(), extras.getParcelable("data"));
-                //bitmap = Bitmap.createBitmap(bitmap, 0, 0, 400, 400);
-                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 75, stream);
-                imv.setImageBitmap(bitmap);
-                InvertImv.setImageBitmap(Filter.doInvert(bitmap));
-                ContrastImv.setImageBitmap(Filter.createContrast((bitmap), 0));
-                RoundedCornerImv.setImageBitmap(Filter.roundCorner((bitmap), 10));
-                SaturationImv.setImageBitmap(Filter.applySaturationFilter((bitmap), 3));
-                HueFilterImv.setImageBitmap(Filter.applyHueFilter((bitmap), 3));
-                GrayScaleImv.setImageBitmap(Filter.doGreyscale(bitmap));
-                RotateImv.setImageBitmap(Filter.rotate((bitmap), 0));
+            //get the returned data
+            Bundle extras = data.getExtras();
+            //get the cropped bitmap
+            Bitmap bitmap = extras.getParcelable("data");
+            //Bitmap bitmap = BitmapFactory.decodeResource(getResources(), extras.getParcelable("data"));
+            //bitmap = Bitmap.createBitmap(bitmap, 0, 0, 400, 400);
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 75, stream);
+            imv.setImageBitmap(bitmap);
+            Cropper.setImageBitmap(bitmap);
+            InvertImv.setImageBitmap(Filter.doInvert(bitmap));
+            ContrastImv.setImageBitmap(Filter.createContrast((bitmap), 0));
+            RoundedCornerImv.setImageBitmap(Filter.roundCorner((bitmap), 10));
+            SaturationImv.setImageBitmap(Filter.applySaturationFilter((bitmap), 3));
+            HueFilterImv.setImageBitmap(Filter.applyHueFilter((bitmap), 3));
+            GrayScaleImv.setImageBitmap(Filter.doGreyscale(bitmap));
+            RotateImv.setImageBitmap(Filter.rotate((bitmap), 0));
+            CropImv.setImageBitmap(bitmap);
             //}
         }
     }
