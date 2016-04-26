@@ -1,2 +1,2 @@
 # ImageFilter
-Applying filtering techniques on image clicked
+An android app for processing and filtering images clicked.
